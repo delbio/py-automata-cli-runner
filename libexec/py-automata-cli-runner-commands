@@ -1,0 +1,5 @@
+#|/usr/bin/env bash
+
+set -e
+
+lasher _commands py-automata-cli-runner
