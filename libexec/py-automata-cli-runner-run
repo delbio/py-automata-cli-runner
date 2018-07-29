@@ -33,7 +33,4 @@ BASE_RESOURCE_FOLDER=${bin_path}/../lib
 source ${BASE_RESOURCE_FOLDER}/python_helpers.bash
 setPythonVersion
 
-# Retreive python runner code and automaton config
-main_runner=${BASE_RESOURCE_FOLDER}/Main.py
-
-${python_i} ${main_runner} "$@"
+${PYTHON_I} ${BASE_RESOURCE_FOLDER}/Main.py "$@"
