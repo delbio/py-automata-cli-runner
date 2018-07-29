@@ -25,7 +25,7 @@ function isPythonDepsOnSync() {
 
     if [ -f $LOCAL_DEPS_STORE_FILE ]; then
         # if local and source differ then python deps out of sync
-        cmp --silent ${LOCAL_DEPS_STORE_FILE} ${SOURCE_DEPS_STORE_FILE} || PYTHON_DEPS_ON_SYNC="false"
+        cmp -s ${LOCAL_DEPS_STORE_FILE} ${SOURCE_DEPS_STORE_FILE} || PYTHON_DEPS_ON_SYNC="false"
     else
         # if local deps store not exist python deps out of sync
         PYTHON_DEPS_ON_SYNC="false"
