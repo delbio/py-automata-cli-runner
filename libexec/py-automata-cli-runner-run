@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#
+# Summary: Run Automaton From config.xml
+#
+# Usage: py-automata-cli-runner run <config-xml-file>
+#
+
+set -e
+#set -x
+
+resolve_link() {
+  $(type -p greadlink readlink | head -1) "$1"
+}
+
+abs_dirname() {
+  local cwd="$(pwd)"
+  local path="$1"
+
+  while [ -n "$path" ]; do
+    cd "${path%/*}"
+    local name="${path##*/}"
+    path="$(resolve_link "$name" || true)"
+  done
+
+  pwd
+  cd "$cwd"
+}
+
+bin_path="$(abs_dirname "$0")"
+BASE_RESOURCE_FOLDER=${bin_path}/../lib
+
+# Load Python version helper
+source ${BASE_RESOURCE_FOLDER}/python_helpers.bash
+setPythonVersion
+
+# Retreive python runner code and automaton config
+main_runner=${BASE_RESOURCE_FOLDER}/Main.py
+
+${python_i} ${main_runner} "$@"

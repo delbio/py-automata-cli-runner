@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Automaton module="automaton.core.Automaton" name="Automaton">
+    <States>
+        <State module="automaton.placeholder" name="PlaceHolderState" type="BEGIN" >
+            <Property name="stateName">Begin</Property>
+        </State>
+        <State module="automaton.placeholder" name="PlaceHolderState" type="-" >
+            <Property name="stateName">Domanda</Property>
+        </State>
+        <State module="automaton.placeholder" name="PlaceHolderState" type="END" >
+            <Property name="stateName">End</Property>
+        </State>
+    </States>
+    <Actions>
+        <Action module="automaton.placeholder" name="PlaceHolderAction" source="Begin" target="Domanda">
+            <Property name="actionName">Start</Property>
+        </Action>
+        <Action module="automaton.placeholder" name="PlaceHolderAction" source="Domanda" target="Domanda">
+            <Property name="actionName">No</Property>
+        </Action>
+        <Action module="automaton.placeholder" name="PlaceHolderAction" source="Domanda" target="End">
+            <Property name="actionName">Si</Property>
+        </Action>
+    </Actions>
+</Automaton>

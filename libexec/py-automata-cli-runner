@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Summary: Aggregator command to manage all package manager at the same time.
+# Summary: Automaton Shell Runner
 #
 # Usage: py-automata-cli-runner <command> [<args>]
 
