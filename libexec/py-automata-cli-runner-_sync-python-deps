@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# Summary: Run Automaton From config.xml
+# Summary: Sync Python Dependencies
 #
-# Usage: py-automata-cli-runner run <config-xml-file>
+# Usage: py-automata-cli-runner-_sync-python-deps
 #
 
 set -e
@@ -27,13 +27,16 @@ abs_dirname() {
 }
 
 bin_path="$(abs_dirname "$0")"
-BASE_RESOURCE_FOLDER=${bin_path}/../lib
-
-# Sync Python Deps before start
-py-automata-cli-runner-_sync-python-deps
+BASE_LIB_FOLDER=${bin_path}/../lib
 
 # Load Python version helper
-source ${BASE_RESOURCE_FOLDER}/python_helpers.bash
-setPythonVersion
+source ${BASE_LIB_FOLDER}/python_helpers.bash
 
-${PYTHON_I} ${BASE_RESOURCE_FOLDER}/Main.py "$@"
+isPythonDepsOnSync
+
+if [ "$PYTHON_DEPS_ON_SYNC" = "false" ]; then
+    echo "Python Deps out of sync, syncing ..."
+    installPythonDeps
+    commitOnSync
+    echo "Changes Committed"
+fi

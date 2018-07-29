@@ -52,6 +52,7 @@ Runner run automata automatically, if more then one action if present for curren
 
 - bash 3.5
 - python3
+- diff
 
 ## Refs:
 
