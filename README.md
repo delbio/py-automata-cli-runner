@@ -1,3 +1,18 @@
+# Py Automata Cli Runner
+
+Run from cli an automaton described by xml file
+
+## How to install
+
+```
+basher install delbio/py-automata-cli-runner
+```
+
+## How to use
+
+Create a model of Automaton like this into file **automaton.model.xml**:
+
+```
 <?xml version="1.0" encoding="UTF-8" ?>
 <Automaton module="automaton.core.Automaton" name="Automaton">
     <States>
@@ -23,3 +38,22 @@
         </Action>
     </Actions>
 </Automaton>
+```
+
+then exec:
+
+```
+py-automata-cli-runner run automaton.model.xml
+```
+
+Runner run automata automatically, if more then one action if present for current state, runner ask to user to select action.
+
+## Requirements
+
+- bash 3.5
+- python3
+
+## Refs:
+
+- https://github.com/delbio/py-automata
+- https://github.com/delbio/py-automata-extras
