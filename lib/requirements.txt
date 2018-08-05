@@ -1,2 +1,2 @@
- git+https://github.com/delbio/py-automata.git#egg=fsm-engine==0.0.4.dev1
+ git+https://github.com/delbio/py-automata.git#egg=fsm-engine==0.0.4.dev2
  git+https://github.com/delbio/py-automata-extras.git#egg=fsm-engine-extras==0.0.1.dev5
