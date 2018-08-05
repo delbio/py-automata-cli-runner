@@ -6,7 +6,12 @@ from defusedxml.ElementTree import parse
 from automaton.builder.XmlBuilder import XmlBuilder
 from automaton.runner.Runner import SimpleRunner
 
-sys.path.append('./actions')
+# Allow use python Modules that are located into script execution folder
+# es:
+# $ cd automaton_flow_folder
+# # all module that are in this folder can be used into automaton.xml
+# $ cli-runner run automaton.xml
+sys.path.append('./')
 
 
 def build_from_xml(filepath):
