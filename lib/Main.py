@@ -1,22 +1,31 @@
 import sys
 import argparse
+import os
 
 from defusedxml.ElementTree import parse
 
 from automaton.builder.XmlBuilder import XmlBuilder
 from automaton.runner.Runner import SimpleRunner
 
-# Allow use python Modules that are located into script execution folder
-# es:
-# $ cd automaton_flow_folder
-# # all module that are in this folder can be used into automaton.xml
-# $ cli-runner run automaton.xml
-sys.path.append('./')
-
+def allow_local_module_if_requested(filepath, element):
+    try:
+        # if local-module-enabled is not present
+        # parse raise exception
+        element.attrib['local-module-enabled']
+        # local-module-enabled present, skip value
+        # Allow Modules that are in config file folder
+        absConfigFilePath = os.path.abspath(filepath)
+        absConfigDirPath = os.path.dirname(absConfigFilePath)
+        sys.path.append(absConfigDirPath)
+        print("Local Module enabled\n")
+    except KeyError:
+        print("No local modules enabled.\n") 
+    pass
 
 def build_from_xml(filepath):
     builder = XmlBuilder()
     root = parse(filepath).getroot()
+    allow_local_module_if_requested(filepath, root)    
     automaton = builder.newObjectFromXmlElement(root)
     print('Loaded Automaton: \n', automaton.__str__())
     return automaton
