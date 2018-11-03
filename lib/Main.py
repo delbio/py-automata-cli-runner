@@ -5,8 +5,9 @@ import os
 from defusedxml.ElementTree import parse
 
 from automaton.builder.XmlBuilder import XmlBuilder
-from Runner import Runner, NextActionSelector
+from Runner import Runner
 from ErrorHandler import ErrorHandlerXmlBuilder
+from ActionSelector import NextActionSelectorXmlBuilder
 
 
 def allow_local_module_if_requested(filepath, element):
@@ -32,14 +33,8 @@ def build_from_xml(filepath):
     automaton = builder.newObjectFromXmlElement(root)
     error_handler_builder = ErrorHandlerXmlBuilder()
     error_handler = error_handler_builder.newObjectFromXmlElement(root)
-
-    # Per le esecuzioni non interattive
-    # se e' presente piu' di una azione in uscita
-    # in un mapping deve essere definita la azione da usare
-    next_action_selector = NextActionSelector()
-    setattr(next_action_selector, 'mapping', {
-        'StateName': 'selectedActionName'
-    })
+    next_action_selector_builder = NextActionSelectorXmlBuilder()
+    next_action_selector = next_action_selector_builder.newObjectFromXmlElement(root)
     return {
         'automaton': automaton,
         'error_handler': error_handler,
