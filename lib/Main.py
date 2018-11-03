@@ -5,7 +5,8 @@ import os
 from defusedxml.ElementTree import parse
 
 from automaton.builder.XmlBuilder import XmlBuilder
-from Runner import Runner, NextActionSelector, ActionExecutionErrorHandler
+from Runner import Runner, NextActionSelector
+from ErrorHandler import ErrorHandlerXmlBuilder
 
 
 def allow_local_module_if_requested(filepath, element):
@@ -29,8 +30,21 @@ def build_from_xml(filepath):
     root = parse(filepath).getroot()
     allow_local_module_if_requested(filepath, root)
     automaton = builder.newObjectFromXmlElement(root)
-    print('Loaded Automaton: \n', automaton.__str__())
-    return automaton
+    error_handler_builder = ErrorHandlerXmlBuilder()
+    error_handler = error_handler_builder.newObjectFromXmlElement(root)
+
+    # Per le esecuzioni non interattive
+    # se e' presente piu' di una azione in uscita
+    # in un mapping deve essere definita la azione da usare
+    next_action_selector = NextActionSelector()
+    setattr(next_action_selector, 'mapping', {
+        'StateName': 'selectedActionName'
+    })
+    return {
+        'automaton': automaton,
+        'error_handler': error_handler,
+        'next_action_selector': next_action_selector
+    }
 
 
 def getArgs():
@@ -45,24 +59,9 @@ def getArgs():
 
 if __name__ == "__main__":
     args = getArgs()
-    automaton = build_from_xml(args.config)
+    components = build_from_xml(args.config)
     runner = Runner()
-
-    errorHandler = ActionExecutionErrorHandler()
-    setattr(errorHandler, 'mapping', {
-        'StateName': {
-            'ErrorClassName': 'StateName.actionName'
-        }
-    })
-    # Per le esecuzioni non interattive
-    # se e' presente piu' di una azione in uscita
-    # in un mapping deve essere definita la azione da usare
-    nextActionSelector = NextActionSelector()
-    setattr(errorHandler, 'mapping', {
-        'StateName': 'selectedActionName'
-    })
-
-    setattr(runner, 'nextActionSelector', nextActionSelector)
-    setattr(runner, 'errorHandler', errorHandler)
+    setattr(runner, 'nextActionSelector', components.get('next_action_selector'))
+    setattr(runner, 'errorHandler', components.get('error_handler'))
     setattr(runner, 'interactive', args.interactive)
-    runner.run(automaton)
+    runner.run(components.get('automaton'))

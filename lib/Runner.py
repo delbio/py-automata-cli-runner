@@ -1,5 +1,3 @@
-import random
-
 
 def select_action_from_list(nextInputs, interactive):
     if not interactive and len(nextInputs) == 1:
@@ -52,25 +50,6 @@ class NextActionSelector:
         nextInputs = state.getNextInputs()
         print("\tNext inputs:\t" + ', '.join(list(nextInputs)))
         return select_action_from_list(nextInputs, interactive)
-
-
-class ActionExecutionErrorHandler:
-    def __init__(self):
-        self.mapping = {}
-        pass
-
-    def handleError(self, state, actionName, error):
-        state_handlers = self.mapping.get(state.getName(), None)
-        if state_handlers is None:
-            raise error
-        next_action = state_handlers.get(error.__class__.__name__, None)
-        if next_action is None:
-            raise error
-
-        return next_action
-
-
-
 
 class Runner:
     def __init__(self):
