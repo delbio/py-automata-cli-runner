@@ -28,13 +28,16 @@ class ErrorHandlerXmlBuilder():
         pass
 
     def newObjectFromXmlElement(self, element):
-        rootNode = element.find('Error')
+        root_node = element.find('Error')
         # handler = getClassFromElement(element)()
         handler = ActionExecutionErrorHandler()
-        setPropertyOnObject('Property', rootNode, handler)
+        if root_node is None:
+            return handler
 
-        stateNodes = rootNode.findall('States/State')
-        for stateElement in stateNodes:
+        setPropertyOnObject('Property', root_node, handler)
+
+        state_nodes = root_node.findall('States/State')
+        for stateElement in state_nodes:
             state_name = stateElement.attrib['name']
             handler.mapping[state_name] = {}
 
