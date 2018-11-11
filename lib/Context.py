@@ -11,6 +11,12 @@ class XmlContextBuilder():
     def __init__(self):
         pass
 
+    def parseActionArgs(mapping, state, action_name, root_node):
+        context_nodes = root_node.findall('context')
+        for stateElement in context_nodes:
+            handler.mapping[state_name][action_name] = {}
+
+
     def newObjectFromXmlElement(self, element):
         root_node = element.find('Context')
         # handler = getClassFromElement(element)()
@@ -29,6 +35,7 @@ class XmlContextBuilder():
             for mapElement in actionContextHandlerOnStateNodes:
                 action_name = mapElement.attrib['name']
                 handler.mapping[state_name][action_name] = {}
+                
 
                 # parse context tag as action contex arg
 
