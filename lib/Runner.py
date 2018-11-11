@@ -13,8 +13,8 @@ class ExecutionResult:
         print('Current State:\t', state)
         pass
 
-    def doAction(self, actionName):
-        print('Exec Action: ', actionName)
+    def doAction(self, action_name, args):
+        print('Exec Action: ', action_name, ' with args: ', args)
         pass
 
     def stopExecution(self):
@@ -28,8 +28,9 @@ class Runner:
 
     def exec_action(self, automaton, action_name, result, error_handler, next_action_selector, context):
         try:
-            result.doAction(action_name)
-            automaton.doAction(action_name)
+            args = context.get_action_args(automaton.getCurrentState(), action_name)
+            result.doAction(action_name, args)
+            automaton.doAction(action_name, args)
             automaton.move(action_name)
             result.nextCurrentState(automaton.getCurrentState())
         except Exception as e:

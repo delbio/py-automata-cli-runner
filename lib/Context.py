@@ -6,6 +6,29 @@ class Context():
         self.mapping = {}
         pass
 
+    def get_action_args(self, state, action_name):
+
+        args = {}
+
+        state_name = state.getName()
+        state_handlers = self.mapping.get(state_name, None)
+        if state_handlers is None:
+            return args
+
+        action_handlers = state_handlers.get(action_name, None)
+        if action_handlers is None:
+            return args
+
+        mapping = action_handlers.get('args_mapping', None)
+        if mapping is None:
+            return args
+
+        action_params = mapping.get('args', None)
+        if action_params is None:
+            return args
+
+        return action_params
+
 
 class XmlContextBuilder():
     def __init__(self):
