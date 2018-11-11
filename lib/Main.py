@@ -59,10 +59,6 @@ def getArgs():
 if __name__ == "__main__":
     args = getArgs()
     components = build_from_xml(args.config)
-    print('context', components.get('context').mapping)
-
+    components['interactive'] = args.interactive
     runner = Runner()
-    setattr(runner, 'nextActionSelector', components.get('next_action_selector'))
-    setattr(runner, 'errorHandler', components.get('error_handler'))
-    setattr(runner, 'interactive', args.interactive)
-    runner.run(components.get('automaton'))
+    runner.run(**components)

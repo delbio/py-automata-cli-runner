@@ -1,6 +1,8 @@
 class ExecutionResult:
-    def __init__(self):
-        self.automaton = None
+    def __init__(self, automaton, error_handler, next_action_selector, context, interactive):
+        self.automaton = automaton
+        self.interactive = interactive
+        self.context = context
         pass
 
     def startExecution(self):
@@ -22,34 +24,42 @@ class ExecutionResult:
 
 class Runner:
     def __init__(self):
-        self.interactive = False
-        self.nextActionSelector = None
-        self.errorHandler = None
         pass
 
-    def execAction(self, automaton, actionName, result):
+    def exec_action(self, automaton, action_name, result, error_handler, next_action_selector, context):
         try:
-            result.doAction(actionName)
-            automaton.doAction(actionName)
-            automaton.move(actionName)
+            result.doAction(action_name)
+            automaton.doAction(action_name)
+            automaton.move(action_name)
             result.nextCurrentState(automaton.getCurrentState())
         except Exception as e:
-            if self.errorHandler is None:
+            if error_handler is None:
                 raise e
-            self.execAction(
+            self.exec_action(
                 automaton,
-                self.errorHandler.handleError(automaton.getCurrentState(), actionName, e),
+                error_handler.handleError(automaton.getCurrentState(), action_name, e),
                 result,
+                error_handler,
+                next_action_selector,
+                context
             )
         pass
 
-    def run(self, automaton):
-        result = ExecutionResult()
-        setattr(result, 'automaton', automaton)
+    def run(self, automaton, error_handler, next_action_selector, context, interactive):
+        result = ExecutionResult(
+            automaton, error_handler, next_action_selector, context, interactive
+        )
         result.startExecution()
         try:
             while not automaton.isFinished():
-                actionName = self.nextActionSelector.nextAction(automaton.getCurrentState(), self.interactive)
-                self.execAction(automaton, actionName, result)
+                action_name = next_action_selector.nextAction(automaton.getCurrentState(), interactive)
+                self.exec_action(
+                    automaton,
+                    action_name,
+                    result,
+                    error_handler,
+                    next_action_selector,
+                    context
+                )
         finally:
             result.stopExecution()
