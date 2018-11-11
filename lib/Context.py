@@ -11,11 +11,27 @@ class XmlContextBuilder():
     def __init__(self):
         pass
 
-    def parseActionArgs(mapping, state, action_name, root_node):
-        context_nodes = root_node.findall('context')
-        for stateElement in context_nodes:
-            handler.mapping[state_name][action_name] = {}
+    def parseActionArgsMapping(self, read_only_context, state_name, action_name, root_node):
+        mapping = {
+            'args': {},
+            'args_from_context': []
+        }
 
+        context_nodes = root_node.findall('context-property')
+        for contextElement in context_nodes:
+            context_prop_name = contextElement.attrib['name']
+            mapping['args_from_context'].append(context_prop_name)
+
+        action_base_nodes = root_node.findall('param')
+        for actionArgElement in action_base_nodes:
+            arg_name = actionArgElement.attrib['name']
+            arg_value = actionArgElement.text
+            mapping['args'][arg_name] = arg_value
+
+        return mapping
+
+    def parseActionResultMapping(self, read_only_context, state_name, action_name, root_node):
+        return {}
 
     def newObjectFromXmlElement(self, element):
         root_node = element.find('Context')
@@ -36,11 +52,16 @@ class XmlContextBuilder():
                 action_name = mapElement.attrib['name']
                 handler.mapping[state_name][action_name] = {}
                 
+                action_args_root_node = mapElement.find('args')
+                if action_args_root_node is not None:
+                    handler.mapping[state_name][action_name]['args_mapping'] = \
+                        self.parseActionArgsMapping(handler, state_name, action_name, action_args_root_node)
 
-                # parse context tag as action contex arg
+                action_results_root_node = mapElement.find('results')
+                if action_results_root_node is not None:
+                    handler.mapping[state_name][action_name]['result_mapping'] = \
+                        self.parseActionResultMapping(handler, state_name, action_name, action_args_root_node)
 
-                # parse arg tag as action arg
 
-                # parse result tag as action result mapping to context
 
         return handler

@@ -8,6 +8,7 @@ from automaton.builder.XmlBuilder import XmlBuilder
 from Runner import Runner
 from ErrorHandler import ErrorHandlerXmlBuilder
 from ActionSelector import NextActionSelectorXmlBuilder
+from Context import XmlContextBuilder
 
 
 def allow_local_module_if_requested(filepath, element):
@@ -35,10 +36,13 @@ def build_from_xml(filepath):
     error_handler = error_handler_builder.newObjectFromXmlElement(root)
     next_action_selector_builder = NextActionSelectorXmlBuilder()
     next_action_selector = next_action_selector_builder.newObjectFromXmlElement(root)
+    context_builder = XmlContextBuilder()
+    context = context_builder.newObjectFromXmlElement(root)
     return {
         'automaton': automaton,
         'error_handler': error_handler,
-        'next_action_selector': next_action_selector
+        'next_action_selector': next_action_selector,
+        'context': context,
     }
 
 
@@ -55,6 +59,8 @@ def getArgs():
 if __name__ == "__main__":
     args = getArgs()
     components = build_from_xml(args.config)
+    print('context', components.get('context').mapping)
+
     runner = Runner()
     setattr(runner, 'nextActionSelector', components.get('next_action_selector'))
     setattr(runner, 'errorHandler', components.get('error_handler'))
