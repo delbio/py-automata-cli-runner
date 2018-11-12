@@ -30,7 +30,7 @@ class Runner:
         try:
             args = context.get_action_args(automaton.getCurrentState(), action_name)
             result.doAction(action_name, args)
-            automaton.doAction(action_name, args)
+            automaton.doAction(action_name, **args)
             automaton.move(action_name)
             result.nextCurrentState(automaton.getCurrentState())
         except Exception as e:
