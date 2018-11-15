@@ -26,20 +26,22 @@ class Runner:
     def __init__(self):
         pass
 
-    def exec_action(self, automaton, action_name, result, error_handler, next_action_selector, context):
+    def exec_action(self, automaton, action_name, logger, error_handler, next_action_selector, context):
         try:
-            args = context.get_action_args(automaton.getCurrentState(), action_name)
-            result.doAction(action_name, args)
-            automaton.doAction(action_name, **args)
+            state = automaton.getCurrentState()
+            args = context.get_action_args(state, action_name)
+            logger.doAction(action_name, args)
+            result = automaton.doAction(action_name, **args)
+            context.update(state, action_name, args, result)
             automaton.move(action_name)
-            result.nextCurrentState(automaton.getCurrentState())
+            logger.nextCurrentState(automaton.getCurrentState())
         except Exception as e:
             if error_handler is None:
                 raise e
             self.exec_action(
                 automaton,
                 error_handler.handleError(automaton.getCurrentState(), action_name, e),
-                result,
+                logger,
                 error_handler,
                 next_action_selector,
                 context

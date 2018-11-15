@@ -29,6 +29,9 @@ class Context():
 
         return action_params
 
+    def update(self, state, action_name, args, result):
+        pass
+
 
 class XmlContextBuilder():
     def __init__(self):
