@@ -4,6 +4,7 @@ from automaton.builder.XmlBuilder import getClassFromElement, getclass, setPrope
 class Context():
     def __init__(self):
         self.mapping = {}
+        self.context = {}
         pass
 
     def get_action_args(self, state, action_name):
@@ -23,11 +24,18 @@ class Context():
         if mapping is None:
             return args
 
-        action_params = mapping.get('args', None)
-        if action_params is None:
-            return args
+        action_params = mapping.get('args', {})
+        param_from_context_mapping = mapping.get('args_from_context', {})
+        args = { **args, **action_params }
 
-        return action_params
+        for key in param_from_context_mapping:
+            print('mapping: ', key, param_from_context_mapping, self.context)
+            param_name = param_from_context_mapping.get(key, None)
+            if param_name is None:
+                raise ValueError('No param name founded into mapping for context prop: '+key)
+            args[param_name] = self.context.get(key, None)
+
+        return args
 
     def update(self, state, action_name, args, result):
         pass
@@ -40,13 +48,14 @@ class XmlContextBuilder():
     def parseActionArgsMapping(self, read_only_context, state_name, action_name, root_node):
         mapping = {
             'args': {},
-            'args_from_context': []
+            'args_from_context': {}
         }
 
-        context_nodes = root_node.findall('context-property')
+        context_nodes = root_node.findall('context')
         for contextElement in context_nodes:
             context_prop_name = contextElement.attrib['name']
-            mapping['args_from_context'].append(context_prop_name)
+            arg_name = contextElement.attrib['param']
+            mapping['args_from_context'][context_prop_name] = arg_name
 
         action_base_nodes = root_node.findall('param')
         for actionArgElement in action_base_nodes:
