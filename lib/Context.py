@@ -28,16 +28,36 @@ class Context():
         param_from_context_mapping = mapping.get('args_from_context', {})
         args = { **args, **action_params }
 
-        for key in param_from_context_mapping:
-            print('mapping: ', key, param_from_context_mapping, self.context)
-            param_name = param_from_context_mapping.get(key, None)
+        for context_prop_name in param_from_context_mapping:
+            param_name = param_from_context_mapping.get(context_prop_name, None)
             if param_name is None:
-                raise ValueError('No param name founded into mapping for context prop: '+key)
-            args[param_name] = self.context.get(key, None)
+                raise ValueError('No param name founded into mapping for context prop: '+context_prop_name)
+            args[param_name] = self.context.get(context_prop_name, None)
 
         return args
 
     def update(self, state, action_name, args, result):
+
+        state_name = state.getName()
+        state_handlers = self.mapping.get(state_name, None)
+        if state_handlers is None:
+            return None
+
+        action_handlers = state_handlers.get(action_name, None)
+        if action_handlers is None:
+            return None
+
+        mapping = action_handlers.get('result_mapping', None)
+        if mapping is None:
+            return None
+
+        for context_prop_name in mapping:
+            result_prop_name = mapping.get(context_prop_name, None)
+            if result_prop_name is None:
+                self.context[context_prop_name] = result
+            else:
+                self.context[context_prop_name] = result[result_prop_name]
+
         pass
 
 
@@ -66,7 +86,23 @@ class XmlContextBuilder():
         return mapping
 
     def parseActionResultMapping(self, read_only_context, state_name, action_name, root_node):
-        return {}
+        mapping = {}
+
+        child_mappings = root_node.findall('property')
+
+        if len(child_mappings) == 0:
+            context_prop_name = root_node.attrib['to']
+            mapping[context_prop_name] = None
+            return mapping
+        else:
+            for child_element in child_mappings:
+                context_prop_name = child_element.attrib['context']
+                result_prop_name = child_element.attrib['result']
+                mapping[context_prop_name] = result_prop_name
+
+        print('result mapping:', state_name, action_name, root_node, root_node.attrib, len(child_mappings), mapping)
+
+        return mapping
 
     def newObjectFromXmlElement(self, element):
         root_node = element.find('Context')
@@ -95,7 +131,7 @@ class XmlContextBuilder():
                 action_results_root_node = mapElement.find('results')
                 if action_results_root_node is not None:
                     handler.mapping[state_name][action_name]['result_mapping'] = \
-                        self.parseActionResultMapping(handler, state_name, action_name, action_args_root_node)
+                        self.parseActionResultMapping(handler, state_name, action_name, action_results_root_node)
 
 
 
