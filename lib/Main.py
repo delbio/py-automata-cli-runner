@@ -1,36 +1,18 @@
-import sys
 import argparse
-import os
 
 from defusedxml.ElementTree import parse
 
-from automaton.builder.XmlBuilder import XmlBuilder
-from Runner import Runner
-from ErrorHandler import ErrorHandlerXmlBuilder
-from ActionSelector import NextActionSelectorXmlBuilder
-from Context import XmlContextBuilder
-
-
-def allow_local_module_if_requested(filepath, element):
-    try:
-        # if local-module-enabled is not present
-        # parse raise exception
-        element.attrib['local-module-enabled']
-        # local-module-enabled present, skip value
-        # Allow Modules that are in config file folder
-        absConfigFilePath = os.path.abspath(filepath)
-        absConfigDirPath = os.path.dirname(absConfigFilePath)
-        sys.path.append(absConfigDirPath)
-        print("Local Module enabled\n")
-    except KeyError:
-        print("No local modules enabled.\n")
-    pass
-
+from automaton.builder.common import allow_local_module_if_requested
+from automaton.builder.XmlBuilder import AutomatonXmlBuilder
+from automaton.runner.Runner import Runner
+from automaton.runner.ErrorHandler import ErrorHandlerXmlBuilder
+from automaton.runner.ActionSelector import NextActionSelectorXmlBuilder
+from automaton.runner.Context import XmlContextBuilder
 
 def build_from_xml(filepath):
-    builder = XmlBuilder()
     root = parse(filepath).getroot()
     allow_local_module_if_requested(filepath, root)
+    builder = AutomatonXmlBuilder()
     automaton = builder.newObjectFromXmlElement(root)
     error_handler_builder = ErrorHandlerXmlBuilder()
     error_handler = error_handler_builder.newObjectFromXmlElement(root)
